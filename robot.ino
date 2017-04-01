@@ -47,6 +47,7 @@ void setup() {
   servo_dch.attach(MOTOR_DCH);
   // Pin para el ventilador
   pinMode(EXTINTOR    , OUTPUT);
+  digitalWrite(EXTINTOR, HIGH);
   // Definiciones para el sensor IR de suelo
   pinMode(SUELO_IR    , INPUT);
   
@@ -121,24 +122,37 @@ void orientarvela(){
 }
 
 void loop() {
-
+  mover("delante");
   while (detectarlinea()==0 || detectarvela()==0){
-    mover("delante");
+    delay(10);
   }
-  mover("detras");
-  delay(500);
-  mover("parar");
-  digitalWrite(EXTINTOR, LOW);
-  for (int i=0; i<10; i++){
-    mover("izquierda");
-    delay(50);
+  if (detectarlinea()==1){
     mover("parar");
     delay(50);
-    if (detectarvela()!=0){break;}
+    mover("detras");
+    delay(300);
+  }
+  mover("parar");
+  
+  if (detectarvela()==0){  
+    for (int i=0; i<10; i++){
+      mover("izquierda");
+      delay(50);
+      mover("parar");
+      delay(50);
+      if (detectarvela()!=0){break;}
+    }
   }
   if (detectarvela()!=0){
     orientarvela();
-    digitalWrite(EXTINTOR, HIGH);
+    mover("delante");
+    while(detectarlinea()==0){
+      delay(10);
+    }
+    mover("parar");
+    while(detectarvela()==1){
+      delay(10);
+    }
   }
 
 }
