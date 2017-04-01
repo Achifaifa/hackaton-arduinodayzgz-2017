@@ -123,7 +123,7 @@ void orientarvela(){
 
 void loop() {
   mover("delante");
-  while (detectarlinea()==0 || detectarvela()==0){
+  while (detectarlinea()==0 && detectarvela()==0){
     delay(10);
   }
   if (detectarlinea()==1){
@@ -156,7 +156,3 @@ void loop() {
   }
 
 }
-
-
-
-
