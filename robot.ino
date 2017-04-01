@@ -9,10 +9,12 @@
 #define LLAMA_ANA_4 A3
 #define LLAMA_DIG_5 6   // Sensor derecho
 #define LLAMA_ANA_5 A4
-// Sensor HC-SR04 
+// Sensor HC-SR04
+//#include <Ultrasonic.h>
 #define US_TRIGGER  7
 #define US_ECHO     8
 #define US_TIMEOUT  30000       // microsegundos
+//Ultrasonic eco;
 // Motores
 #include <Servo.h>
 #define MOTOR_IZQ 9
@@ -28,7 +30,7 @@ Servo servo_dch;
 
 void setup() {
 
-  
+  delay(5000);
   pinMode(LLAMA_DIG_1 , INPUT);
   pinMode(LLAMA_ANA_1 , INPUT);
   pinMode(LLAMA_DIG_2 , INPUT);
@@ -39,7 +41,7 @@ void setup() {
   pinMode(LLAMA_ANA_4 , INPUT);
   pinMode(LLAMA_DIG_5 , INPUT);
   pinMode(LLAMA_ANA_5 , INPUT);
-  pinMode(US_TRIGGER  , INPUT);
+  //eco.Ultrasonic(US_TRIGGER  , US_ECHO);
 
   servo_izq.attach(MOTOR_IZQ);
   servo_dch.attach(MOTOR_DCH);
@@ -114,24 +116,30 @@ void orientarvela(){
       mover("derecha");
     }
     delay(10);
-    mover("parar")
-  }
+    mover("parar");
+  }  
 }
 
 void loop() {
 
-  while (detectarlinea==0){
-    mover("delante")
+  while (detectarlinea()==0 || detectarvela()==0){
+    mover("delante");
   }
-  digitalWrite(EXTINTOR, LOW)
-  for (int i=0; i<20; i++){
+  mover("detras");
+  delay(500);
+  mover("parar");
+  digitalWrite(EXTINTOR, LOW);
+  for (int i=0; i<10; i++){
     mover("izquierda");
-    delay(100);
+    delay(50);
     mover("parar");
+    delay(50);
     if (detectarvela()!=0){break;}
   }
-  orientarvela();
-  digitalWrite(EXTINTOR, HIGH);
+  if (detectarvela()!=0){
+    orientarvela();
+    digitalWrite(EXTINTOR, HIGH);
+  }
 
 }
 
