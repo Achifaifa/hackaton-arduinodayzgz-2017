@@ -17,7 +17,7 @@
 #include <Servo.h>
 #define MOTOR_IZQ 9
 #define MOTOR_DCH 10
-#define ZEROS 112  
+#define ZEROS 111  
 Servo servo_izq;        // Crea los objetos para los dos servos
 Servo servo_dch;
 // Pin para el ventilador
@@ -47,6 +47,7 @@ void setup() {
   pinMode(EXTINTOR    , OUTPUT);
   // Definiciones para el sensor IR de suelo
   pinMode(SUELO_IR    , INPUT);
+  
 }
 
 int detectarlinea(){
@@ -57,23 +58,13 @@ int detectarlinea(){
   return 0;
 }
 
-int detectarvela(){
-
-  if (digitalRaed(LLAMA_DIG_1)==1){return 1;}
-  if (digitalRaed(LLAMA_DIG_2)==1){return 2;}
-  if (digitalRaed(LLAMA_DIG_3)==1){return 3;}
-  if (digitalRaed(LLAMA_DIG_4)==1){return 4;}
-  if (digitalRaed(LLAMA_DIG_5)==1){return 5;}
-  return 0;
-}
-
 // rueda izquierda
 //     valor > ZERO_IZQ --> adelante
 //     valor < ZERO_IZQ --> atrás
 // rueda derecha
 //     valor < ZERO_DCH --> adelante
 //     valor > ZERO_DCH --> atrás
-void mover(dir){
+void mover(String dir){
 
   if (dir=="delante"){
     servo_dch.write(0);
@@ -97,8 +88,50 @@ void mover(dir){
   }
 }
 
+int detectarvela(){
+
+  if (digitalRead(LLAMA_DIG_1)==1){return 1;}
+  if (digitalRead(LLAMA_DIG_2)==1){return 2;}
+  if (digitalRead(LLAMA_DIG_3)==1){return 3;}
+  if (digitalRead(LLAMA_DIG_4)==1){return 4;}
+  if (digitalRead(LLAMA_DIG_5)==1){return 5;}
+  return 0;
+}
+void orientarvela(){
+
+  while (detectarvela()!=3){
+    int vela=detectarvela();
+    if (vela==1){
+      mover("izquierda");
+    }
+    if (vela==2){
+      mover("izquierda");
+    }
+    if (vela==4){
+      mover("derecha");
+    }
+    if (vela==5){
+      mover("derecha");
+    }
+    delay(10);
+    mover("parar")
+  }
+}
+
 void loop() {
 
+  while (detectarlinea==0){
+    mover("delante")
+  }
+  digitalWrite(EXTINTOR, LOW)
+  for (int i=0; i<20; i++){
+    mover("izquierda");
+    delay(100);
+    mover("parar");
+    if (detectarvela()!=0){break;}
+  }
+  orientarvela();
+  digitalWrite(EXTINTOR, HIGH);
 
 }
 
